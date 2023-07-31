@@ -24,6 +24,12 @@ const albumSchema = new Schema({
   ],
 });
 
+albumSchema.methods.toJSON = function () {
+  const album = this.toObject();
+  album.id = album._id.toString();
+  delete album._id;
+  return album;
+};
 const Album = mongoose.model("Album", albumSchema);
 
 module.exports = Album;

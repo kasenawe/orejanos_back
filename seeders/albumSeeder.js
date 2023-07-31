@@ -13,14 +13,11 @@
  *
  */
 
-const { faker } = require("@faker-js/faker");
-const User = require("../models/User");
-
-faker.locale = "es";
+const albums = require("./albums");
+const Album = require("../models/Album");
 
 module.exports = async () => {
-  /**
-   * Escribir código del seeder aquí...
-   */
-  console.log("[Database] Se corrió el seeder de Users.");
+  await Album.insertMany(albums);
+
+  console.log("[Database] Se corrió el seeder de Albums.");
 };

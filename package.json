@@ -1,6 +1,6 @@
 {
-  "name": "ejercicio_twitter_proyecto_base",
-  "description": "Hack Academy - Proyecto Base para ejercicio de Twitter",
+  "name": "orejanos_back",
+  "description": "Orejanos backend",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
