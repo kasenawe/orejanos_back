@@ -1,17 +1,13 @@
-const Album = require("../models/Album");
-const Admin = require("../models/Admin");
+const Article = require("../models/Article");
 
 // Display a listing of the resource.
 async function index(req, res) {
-  const albums = await Album.find();
-  return res.json(albums);
+  const articles = await Article.find();
+  return res.json(articles);
 }
 
 // Display the specified resource.
-async function show(req, res) {
-  const album = await Album.findOne({ slug: req.params.slug });
-  return res.json({ album });
-}
+async function show(req, res) {}
 
 // Show the form for creating a new resource
 async function create(req, res) {}

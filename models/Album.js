@@ -22,6 +22,10 @@ const albumSchema = new Schema({
       },
     },
   ],
+  slug: {
+    type: String,
+    required: true,
+  },
 });
 
 albumSchema.methods.toJSON = function () {

@@ -24,6 +24,7 @@ async function runAllSeeders() {
 
   await require("./adminSeeder")();
   await require("./albumSeeder")();
+  await require("./articleSeeder")();
 
   console.log("[Database] ¡Los datos de prueba fueron insertados!");
   process.exit();
