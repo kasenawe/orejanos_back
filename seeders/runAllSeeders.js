@@ -17,8 +17,10 @@
 require("dotenv").config();
 
 async function runAllSeeders() {
+  /*
   const { mongoose } = require("../db");
   await mongoose.connection.dropDatabase();
+*/
 
   // Seeders:
 
