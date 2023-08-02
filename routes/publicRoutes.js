@@ -3,8 +3,11 @@ const router = express.Router();
 const pagesController = require("../controllers/pagesController");
 const albumController = require("../controllers/albumController");
 const articleController = require("../controllers/articleController");
+const userController = require("../controllers/userController");
 
 router.get("/", pagesController.showHome);
+
+router.post("/login", userController.token);
 
 router.get("/albums", albumController.index);
 

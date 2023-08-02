@@ -4,8 +4,8 @@ module.exports = async () => {
   const admin = await new Admin({
     firstname: "Maximiliano",
     lastname: "Quintana",
-    username: "admin",
-    password: "kasenawe",
+    username: "kasenawe",
+    password: "admin",
     role_code: "100",
   });
 

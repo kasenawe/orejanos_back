@@ -1,4 +1,26 @@
-const User = require("../models/User");
+const Admin = require("../models/Admin");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+
+async function token(req, res) {
+  const admin = await Admin.findOne({ username: req.body.username });
+  console.log(req.body.username);
+  if (!admin) {
+    return res.json({ error: "Credenciales inválidas" });
+  } else if (!(await admin.comparePassword(req.body.password))) {
+    return res.json({ error: "Credenciales inválidas" });
+  } else {
+    const token = jwt.sign({ id: admin.id }, process.env.SESSION_SECRET);
+
+    return res.json({
+      token,
+      id: admin.id,
+      firstname: admin.firstname,
+      lastname: admin.lastname,
+      username: admin.username,
+    });
+  }
+}
 
 // Display a listing of the resource.
 async function index(req, res) {}
@@ -25,6 +47,7 @@ async function destroy(req, res) {}
 // ...
 
 module.exports = {
+  token,
   index,
   show,
   create,
