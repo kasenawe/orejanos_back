@@ -95,7 +95,7 @@ async function deleteImage(req, res) {
     const imageFilename = req.params.filename;
 
     // Eliminar la imagen de Supabase
-    const { data, error } = await supabase.storage.from("img").remove(["asdads"]);
+    const { data, error } = await supabase.storage.from("img").remove([imageFilename]);
 
     if (error) {
       console.error("Error al eliminar la imagen de Supabase:", error);
