@@ -30,47 +30,52 @@ async function create(req, res) {}
 async function store(req, res) {
   const form = formidable({
     multiples: true,
-
     keepExtensions: true,
   });
 
   form.parse(req, async (err, fields, files) => {
-    console.log(files);
     if (err) {
       console.log(err);
+      return res.status(500).json("Error interno del servidor");
     }
-    let imageFilename;
-    if (files.images) {
-      imageFilename = files.images.originalFilename;
-      coverImageFilename = files.images.originalFilename;
-
+    const imageFiles = files.images || [];
+    const albumImages = [];
+    for (const imageFile of imageFiles) {
+      const imageFilename = imageFile.originalFilename;
       const { data, error } = await supabase.storage
         .from("img")
-        .upload(`${imageFilename}`, fs.createReadStream(files.images.filepath), {
+        .upload(imageFilename, fs.createReadStream(imageFile.filepath), {
           cacheControl: "3600",
           upsert: false,
-          contentType: files.images.mimetype,
+          contentType: imageFile.type,
           duplex: "half",
         });
-      // ...
+
       if (error) {
         console.error("Error uploading image to Supabase:", error);
-        return res.json("Album create failed when saving image");
+        return res.status(500).json("Error al subir imagen a Supabase");
       }
+
+      albumImages.push({ src: imageFilename, alt: imageFilename });
     }
+
     const album = new Album({
       name: fields.name,
-      coverImage: coverImageFilename,
-      images: [{ src: imageFilename, alt: imageFilename }],
-      slug: slugify(`${fields.name} `, {
+      coverImage: albumImages.length > 0 ? albumImages[0].src : null, // You might want to adjust this based on your logic
+      images: albumImages,
+      slug: slugify(`${fields.name}`, {
         replacement: "-",
         lower: true,
       }),
     });
 
-    await album.save();
-
-    return res.json("Album updated");
+    try {
+      await album.save();
+      return res.json("Álbum creado exitosamente");
+    } catch (error) {
+      console.error("Error al guardar el álbum:", error);
+      return res.status(500).json("Error al guardar el álbum en la base de datos");
+    }
   });
 }
 
@@ -83,14 +88,31 @@ async function update(req, res) {}
 // Remove the specified resource from storage.
 async function destroy(req, res) {
   try {
-    await Album.findByIdAndDelete(req.params.id);
-    return res.json("Album has been deleted");
+    const album = await Album.findByIdAndDelete(req.params.id);
+
+    // Si el álbum fue encontrado y eliminado exitosamente
+    if (album) {
+      // Eliminar las imágenes de Supabase
+      for (const image of album.images) {
+        const { data, error } = await supabase.storage.from("img").remove([image.src]);
+
+        if (error) {
+          console.error("Error al eliminar la imagen de Supabase:", error);
+          return res.status(500).json("Error al eliminar las imágenes del álbum");
+        }
+      }
+
+      return res.json("Álbum y sus imágenes han sido eliminados");
+    } else {
+      return res.json("Álbum no encontrado");
+    }
   } catch {
     return res.json("Failed deleting requested album");
   }
 }
 
 async function deleteImage(req, res) {
+  console.log(req.params.filename);
   try {
     const imageFilename = req.params.filename;
 
