@@ -38,8 +38,16 @@ async function store(req, res) {
       console.log(err);
       return res.status(500).json("Error interno del servidor");
     }
-    const imageFiles = files.images || [];
+
+    let imageFiles;
+    if (Array.isArray(files.images)) {
+      imageFiles = files.images;
+    } else {
+      imageFiles = [files.images];
+    }
+
     const albumImages = [];
+
     for (const imageFile of imageFiles) {
       const imageFilename = imageFile.originalFilename;
       const { data, error } = await supabase.storage
