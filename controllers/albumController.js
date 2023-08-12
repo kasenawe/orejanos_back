@@ -91,7 +91,22 @@ async function store(req, res) {
 async function edit(req, res) {}
 
 // Update the specified resource in storage.
-async function update(req, res) {}
+async function update(req, res) {
+  console.log(req.body);
+  try {
+    await Album.findByIdAndUpdate(req.params.id, {
+      name: req.body.name,
+      slug: slugify(req.body.name, {
+        replacement: "-",
+        lower: true,
+      }),
+    });
+
+    return res.json("Album updated");
+  } catch {
+    return res.json("Failed updating requested line");
+  }
+}
 
 // Remove the specified resource from storage.
 async function destroy(req, res) {
@@ -119,26 +134,6 @@ async function destroy(req, res) {
   }
 }
 
-async function deleteImage(req, res) {
-  console.log(req.params.filename);
-  try {
-    const imageFilename = req.params.filename;
-
-    // Eliminar la imagen de Supabase
-    const { data, error } = await supabase.storage.from("img").remove([imageFilename]);
-
-    if (error) {
-      console.error("Error al eliminar la imagen de Supabase:", error);
-      return res.status(500).json("Error al eliminar la imagen");
-    }
-
-    return res.json("Imagen eliminada de Supabase");
-  } catch (error) {
-    console.error("Error en la función deleteImage:", error);
-    return res.status(500).json("Error interno del servidor");
-  }
-}
-
 // Otros handlers...
 // ...
 
@@ -150,5 +145,4 @@ module.exports = {
   edit,
   update,
   destroy,
-  deleteImage,
 };

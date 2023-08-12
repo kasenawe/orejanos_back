@@ -10,14 +10,14 @@ router.post(
   albumController.store,
 );
 
-router.delete(
-  "/album/delete-image/:filename",
+router.patch(
+  "/album/edit/:id",
   checkJwt({ secret: process.env.SESSION_SECRET, algorithms: ["HS256"] }),
-  albumController.deleteImage,
+  albumController.update,
 );
 
 router.delete(
-  "/album/:id",
+  "/album/delete/:id",
   checkJwt({ secret: process.env.SESSION_SECRET, algorithms: ["HS256"] }),
   albumController.destroy,
 );
