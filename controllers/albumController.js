@@ -90,9 +90,66 @@ async function store(req, res) {
 // Show the form for editing the specified resource.
 async function edit(req, res) {}
 
+// Add photos to the specified resource in storage.
+async function addPhoto(req, res) {
+  const albumId = req.params.id;
+
+  const form = formidable({
+    multiples: true,
+    keepExtensions: true,
+  });
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json("Error interno del servidor");
+    }
+
+    let imageFiles;
+    if (Array.isArray(files.images)) {
+      imageFiles = files.images;
+    } else {
+      imageFiles = [files.images];
+    }
+
+    const albumImages = [];
+    try {
+      // Fetch the existing album from the database
+      const album = await Album.findById(albumId);
+
+      for (const imageFile of imageFiles) {
+        const imageFilename = imageFile.originalFilename;
+        const { data, error } = await supabase.storage
+          .from("img")
+          .upload(imageFilename, fs.createReadStream(imageFile.filepath), {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: imageFile.type,
+            duplex: "half",
+          });
+
+        if (error) {
+          console.error("Error uploading image to Supabase:", error);
+          return res.status(500).json("Error al subir imagen a Supabase");
+        }
+
+        albumImages.push({ src: imageFilename, alt: imageFilename });
+      }
+
+      // Concatenate the new images with the existing images
+      album.images = album.images.concat(albumImages);
+
+      // Save the updated album back to the database
+      await album.save();
+      return res.json("Fotos agregadas exitosamente");
+    } catch (error) {
+      console.error("Error:", error);
+      return res.status(500).json("Error al agregar fotos al álbum");
+    }
+  });
+}
+
 // Update the specified resource in storage.
 async function update(req, res) {
-  console.log(req.body);
   try {
     await Album.findByIdAndUpdate(req.params.id, {
       name: req.body.name,
@@ -143,6 +200,7 @@ module.exports = {
   create,
   store,
   edit,
+  addPhoto,
   update,
   destroy,
 };
