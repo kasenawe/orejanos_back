@@ -111,6 +111,8 @@ async function addPhoto(req, res) {
       imageFiles = [files.images];
     }
 
+    console.log(fields);
+
     const albumImages = [];
     try {
       // Fetch the existing album from the database
