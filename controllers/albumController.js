@@ -170,6 +170,31 @@ async function addPhoto(req, res) {
 }
 
 // Update the specified resource in storage.
+async function updatePhoto(req, res) {
+  try {
+    const imageId = req.params.id;
+    const newDescription = req.body.description;
+
+    console.log(imageId);
+
+    // Encuentra el álbum que contiene la imagen
+    let album = await Album.findOne({ "images._id": new ObjectId(imageId) });
+
+    // Encuentra y actualiza la descripción de la imagen dentro del álbum
+    album = await Album.findOneAndUpdate(
+      { "images._id": new ObjectId(imageId) },
+      { $set: { "images.$.description": newDescription } },
+      { new: true },
+    );
+
+    return res.json("Image description updated");
+  } catch (error) {
+    console.error("Failed updating image description:", error);
+    return res.json("Failed updating image description");
+  }
+}
+
+// Update the specified resource in storage.
 async function update(req, res) {
   try {
     await Album.findByIdAndUpdate(req.params.id, {
@@ -296,6 +321,7 @@ module.exports = {
   store,
   edit,
   addPhoto,
+  updatePhoto,
   update,
   destroy,
   destroyImage,

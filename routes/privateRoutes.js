@@ -17,6 +17,12 @@ router.patch(
 );
 
 router.patch(
+  "/album/edit/photo/:id",
+  checkJwt({ secret: process.env.SESSION_SECRET, algorithms: ["HS256"] }),
+  albumController.updatePhoto,
+);
+
+router.patch(
   "/album/edit/:id",
   checkJwt({ secret: process.env.SESSION_SECRET, algorithms: ["HS256"] }),
   albumController.update,
