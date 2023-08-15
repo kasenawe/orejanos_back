@@ -28,4 +28,10 @@ router.delete(
   albumController.destroy,
 );
 
+router.delete(
+  "/album/delete/image/:id",
+  checkJwt({ secret: process.env.SESSION_SECRET, algorithms: ["HS256"] }),
+  albumController.destroyImage,
+);
+
 module.exports = router;
