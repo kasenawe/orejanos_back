@@ -19,6 +19,7 @@
 
 const publicRoutes = require("./publicRoutes");
 const privateRoutes = require("./privateRoutes");
+const { expressjwt: checkJwt } = require("express-jwt");
 
 module.exports = (app) => {
   /**
@@ -29,8 +30,10 @@ module.exports = (app) => {
    */
 
   // app.use("/usuarios", userRoutes);
+
   app.use("/", publicRoutes);
-  app.use("/admin", privateRoutes);
+  app.use(checkJwt({ secret: process.env.SESSION_SECRET, algorithms: ["HS256"] }));
+  app.use("/api", privateRoutes);
 };
 
 // PD: Recordar que es muy importante el orden en que se definen las rutas.

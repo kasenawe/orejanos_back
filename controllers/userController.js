@@ -23,7 +23,10 @@ async function token(req, res) {
 }
 
 // Display a listing of the resource.
-async function index(req, res) {}
+async function index(req, res) {
+  const admins = await Admin.find();
+  return res.json(admins);
+}
 
 // Display the specified resource.
 async function show(req, res) {}

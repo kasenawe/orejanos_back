@@ -104,6 +104,7 @@ async function edit(req, res) {}
 // Add photos to the specified resource in storage.
 async function addPhoto(req, res) {
   const albumId = req.params.id;
+  console.log(albumId);
 
   const form = formidable({
     multiples: true,
