@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const pagesController = require("../controllers/pagesController");
+
 const albumController = require("../controllers/albumController");
 const articleController = require("../controllers/articleController");
-const userController = require("../controllers/userController");
-
-router.get("/", pagesController.showHome);
+const userController = require("../controllers/adminController");
 
 router.post("/login", userController.token);
 

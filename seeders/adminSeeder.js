@@ -5,7 +5,7 @@ module.exports = async () => {
     firstname: "Maximiliano",
     lastname: "Quintana",
     username: "kasenawe",
-    password: "admin",
+    password: "sonajero",
     role_code: "100",
   });
 
