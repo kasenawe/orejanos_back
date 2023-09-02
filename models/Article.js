@@ -1,20 +1,23 @@
 const { mongoose, Schema } = require("../db");
 
 // Crear esquema y modelo Article...
-const articleSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+const articleSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
   },
-  image: {
-    type: String,
-    required: true,
-  },
-  content: {
-    type: String,
-    required: true,
-  },
-});
+  { timestamps: true },
+);
 
 articleSchema.methods.toJSON = function () {
   const article = this.toObject();
