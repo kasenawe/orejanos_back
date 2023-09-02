@@ -72,7 +72,31 @@ async function edit(req, res) {}
 async function update(req, res) {}
 
 // Remove the specified resource from storage.
-async function destroy(req, res) {}
+async function destroy(req, res) {
+  try {
+    const article = await Article.findByIdAndDelete(req.params.id);
+
+    // Si articulo fue encontrado y eliminado exitosamente
+    if (article) {
+      // Eliminar imágen de Supabase
+
+      const { data, error } = await supabase.storage
+        .from("img")
+        .remove(`articles/${article.image}`);
+
+      if (error) {
+        console.error("Error al eliminar la imagen de Supabase:", error);
+        return res.status(500).json("Error al eliminar la imágen del articulo");
+      }
+
+      return res.json("Articulo e imágen han sido eliminados");
+    } else {
+      return res.json("Articulo no encontrado");
+    }
+  } catch {
+    return res.json("Failed deleting requested article");
+  }
+}
 
 // Otros handlers...
 // ...
