@@ -69,7 +69,71 @@ async function store(req, res) {
 async function edit(req, res) {}
 
 // Update the specified resource in storage.
-async function update(req, res) {}
+async function update(req, res) {
+  try {
+    const form = formidable({
+      multiples: true,
+      keepExtensions: true,
+    });
+
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json("Error interno del servidor");
+      }
+
+      // Check if image field is present
+      if (fields.image) {
+        // Update the rest of the fields
+        await Article.findByIdAndUpdate(req.params.id, {
+          name: fields.name,
+          content: fields.content,
+        });
+
+        // Send response here after updating
+        return res.json("Article updated");
+      } else {
+        // Fetch the existing article image path name from the database
+        const article = await Article.findById(req.params.id);
+
+        const { data, error } = await supabase.storage
+          .from("img")
+          .remove(`articles/${article.image}`);
+
+        if (error) {
+          console.error("Error al eliminar la imagen de Supabase:", error);
+          return res.status(500).json("Error al eliminar la imágen del articulo");
+        }
+      }
+      const imageFilename = files.image.originalFilename;
+      const { data, error } = await supabase.storage
+        .from("img")
+        .upload(`articles/${imageFilename}`, fs.createReadStream(files.image.filepath), {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: files.image.type,
+          duplex: "half",
+        });
+
+      if (error) {
+        console.error("Error uploading image to Supabase:", error);
+        return res.status(500).json("Error al subir imagen a Supabase");
+      }
+
+      // Update the article with the image filename
+      await Article.findByIdAndUpdate(req.params.id, {
+        name: fields.name,
+        image: imageFilename,
+        content: fields.content,
+      });
+      // Send response here after updating
+      return res.json("Article updated");
+    });
+  } catch (error) {
+    console.error("Error in update function:", error);
+    return res.status(500).json("Failed updating requested article");
+  }
+}
 
 // Remove the specified resource from storage.
 async function destroy(req, res) {
