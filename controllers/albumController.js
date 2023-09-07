@@ -60,7 +60,7 @@ async function store(req, res) {
       const imageFile = imageFiles[i];
       const description = descriptions[i]; // Obtener la descripción correspondiente
 
-      const imageFilename = imageFile.originalFilename;
+      const imageFilename = imageFile.newFilename;
       const { data, error } = await supabase.storage
         .from("img")
         .upload(imageFilename, fs.createReadStream(imageFile.filepath), {
@@ -139,7 +139,7 @@ async function addPhoto(req, res) {
         const imageFile = imageFiles[i];
         const description = descriptions[i]; // Obtener la descripción correspondiente
 
-        const imageFilename = imageFile.originalFilename;
+        const imageFilename = imageFile.newFilename;
         const { data, error } = await supabase.storage
           .from("img")
           .upload(imageFilename, fs.createReadStream(imageFile.filepath), {

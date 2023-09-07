@@ -34,7 +34,7 @@ async function store(req, res) {
       return res.status(500).json("Error interno del servidor");
     }
 
-    const imageFilename = files.image.originalFilename;
+    const imageFilename = files.image.newFilename;
     const { data, error } = await supabase.storage
       .from("img")
       .upload(`articles/${imageFilename}`, fs.createReadStream(files.image.filepath), {
@@ -105,7 +105,7 @@ async function update(req, res) {
           return res.status(500).json("Error al eliminar la imágen del articulo");
         }
       }
-      const imageFilename = files.image.originalFilename;
+      const imageFilename = files.image.newFilename;
       const { data, error } = await supabase.storage
         .from("img")
         .upload(`articles/${imageFilename}`, fs.createReadStream(files.image.filepath), {
